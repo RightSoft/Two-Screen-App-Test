@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Radial Menu</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #007acc;
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: sans-serif;
+            cursor: pointer;
+        }
+
+        .circle-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .half {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            top: 0;
+            background-color: rgba(255, 255, 255, 0.3);
+            transition: background-color 0.3s;
+        }
+
+        .left {
+            left: 0;
+            border-top-left-radius: 150px;
+            border-bottom-left-radius: 150px;
+        }
+
+        .right {
+            right: 0;
+            border-top-right-radius: 150px;
+            border-bottom-right-radius: 150px;
+        }
+
+        .highlight {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .label {
+            position: absolute;
+            width: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .label.left {
+            left: 0;
+        }
+
+        .label.right {
+            right: 0;
+        }
+
+        .resolution {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            font-size: 14px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="resolution" id="resolutionInfo"></div>
+
+    <div class="circle-container" id="menuCircle">
+        <div class="half left" id="leftHalf"></div>
+        <div class="half right" id="rightHalf"></div>
+        <div class="label left">Menu Item 1</div>
+        <div class="label right">Menu Item 2</div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        let selected = 0;
+
+        function updateHighlight() {
+            document.getElementById('leftHalf').classList.toggle('highlight', selected === 0);
+            document.getElementById('rightHalf').classList.toggle('highlight', selected === 1);
+        }
+
+        window.addEventListener('wheel', (e) => {
+            selected = (selected + (e.deltaY > 0 ? 1 : -1) + 2) % 2;
+            updateHighlight();
+        });
+
+        window.addEventListener('click', () => {
+            const text = selected === 0 ? 'Menu Item 1' : 'Menu Item 2';
+
+            ipcRenderer.send('change-view2-color', `${text} clicked`);
+        });
+
+        updateHighlight();
+        document.getElementById('resolutionInfo').textContent = `${window.innerWidth} × ${window.innerHeight}`;
+    </script>
+</body>
+
+</html>

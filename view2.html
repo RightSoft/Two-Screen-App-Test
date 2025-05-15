@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>View 2</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background-color: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-family: sans-serif;
+    }
+
+    .resolution {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      font-size: 14px;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-family: monospace;
+    }
+
+    .clickedItem {
+      position: fixed;
+      bottom: 10px;
+      right: 20px;
+      font-size: 16px;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="resolution" id="resolutionInfo"></div>
+  <div class="clickedItem" id="clickedItem"></div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    // Show screen resolution
+    document.getElementById('resolutionInfo').textContent = `${window.innerWidth} × ${window.innerHeight}`;
+
+    // Listen for IPC message from view1
+    ipcRenderer.on('change-bg-color', (event, clickedItem) => {
+      const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 60%, 50%)`;
+      document.body.style.backgroundColor = randomColor;
+
+      document.body.setAttribute('data-clicked', clickedItem);
+      document.getElementById('clickedItem').textContent = `Clicked: ${clickedItem}`;
+    });
+  </script>
+
+</body>
+
+</html>
